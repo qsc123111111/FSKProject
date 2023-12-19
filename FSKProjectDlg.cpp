@@ -338,6 +338,7 @@ void CFSKProjectDlg::OnBnClickedInputbutton()
 		CString a = im.text1;
 		CString b = im.text2;
 		CString c = im.text3;
+		CString d = im.text4;
 
 		int result = a.Compare(RECTANGLE_W);
 		int result1 = a.Compare(HANNING_W);
@@ -390,13 +391,24 @@ void CFSKProjectDlg::OnBnClickedInputbutton()
 			mySignal.SetSelectModulation(2);  //PSK
 		}
 
+		result = d.Compare(DPC);
+		result1 = d.Compare(SPC);
+
+		if (result == 0) {
+			mySignal.SetSelectCodeStyle(0);  //双极性
+		}
+		else if (result1 == 0) {
+			mySignal.SetSelectCodeStyle(1);  //单极性
+
+		}
+
 		CString strIntensity;
 		strIntensity.Format(_T("%d"), noiseIntensity);
 
 		inputText.SetWindowTextW(_T("学号：") + stuID + _T("    噪音强度：") + strIntensity
 			+ _T("\n低通滤波器：") + a + _T("\n带通滤波器：") + b + _T("\n调制方式：") + c);
 
-		mySignal.init(im.samplingFrequency, im.carrierFrequency, im.symbolPeriod, im.filterOrder, im.asOfFrequency_LPF, im.minimumFrequency_BPF, im.maximumFrequency_BPF);
+		mySignal.init(im.samplingFrequency, im.carrierFrequency, im.symbolPeriod, im.filterOrder, im.asOfFrequency_LPF, im.minimumFrequency_BPF, im.maximumFrequency_BPF,im.carrierFrequency2);
 	}
 }
 

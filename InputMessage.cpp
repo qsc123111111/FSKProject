@@ -38,14 +38,12 @@ void InputMessage::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_minimumFrequency_BPF, minimumFrequency_BPF);
 	DDX_Text(pDX, IDC_maximumFrequency_BPF, maximumFrequency_BPF);
 
-
-
-
-
+	DDX_Text(pDX, IDC_CarrierFrequency2, carrierFrequency2);
 
 	DDX_Control(pDX, IDC_COMBO2, m_cbExamble1);
 	DDX_Control(pDX, IDC_COMBO3, m_cbExamble2);
 	DDX_Control(pDX, IDC_COMBO1, m_cbExamble3);
+	DDX_Control(pDX, IDC_COMBO4, m_cbExamble4);
 }
 
 
@@ -97,6 +95,9 @@ void InputMessage::OnBnClickedOk()
 	int cindex3 = m_cbExamble3.GetCurSel();
 	m_cbExamble3.GetLBText(cindex3, text3);
 	
+	int cindex4 = m_cbExamble4.GetCurSel();
+	m_cbExamble4.GetLBText(cindex4, text4);
+
 	CDialogEx::OnOK();
 }
 

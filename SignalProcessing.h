@@ -2,10 +2,6 @@
 
 double const PI1 = 3.1415926;
 
-//FSK常量
-float const f11 = 1000.0;   //第一个频率
-float const f22 = 2000.0;   //第二个频率
-
 class SignalProcessing
 {
 public:
@@ -13,7 +9,7 @@ public:
 	SignalProcessing();
 	virtual ~SignalProcessing();
 
-	void init(int samplingFrequency, int carrierFrequency, int symbolPeriod, int filterOrder, int asOfFrequency_LPF, int minimumFrequency_BPF, int maximumFrequency_BPF);;
+	void init(int samplingFrequency, int carrierFrequency, int symbolPeriod, int filterOrder, int asOfFrequency_LPF, int minimumFrequency_BPF, int maximumFrequency_BPF,int carrierFrequency2);
 	void SetSignal(int id,int intensty);
 
 	void DFT(float x[], int m);    //离散傅里叶变换
@@ -69,6 +65,9 @@ public:
 	int GetSelectModulation();
 	void SetSelectModulation(int sM);
 
+	int GetSelectCodeStyle();
+	void SetSelectCodeStyle(int sCS);
+
 
 private:
 	int stuID;					//学号
@@ -102,8 +101,12 @@ private:
 	int fh;						//低通的截至频率
 	int fc ;					//载波频率
 
+	int fc2;                   //载波频率2
+
+
 
 	int selectModulation;                //调制方式选择
+	int selectCodeStyle;                 //码型选择
 
 };
 

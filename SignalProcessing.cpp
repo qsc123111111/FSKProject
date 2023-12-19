@@ -29,6 +29,10 @@ SignalProcessing::SignalProcessing()
 	fld = 600;		
 	fh = 200;			
 	fc = 1000;  
+
+	fc2 = 2000;
+
+	selectCodeStyle = 0;
 }
 
 SignalProcessing::~SignalProcessing()
@@ -37,7 +41,7 @@ SignalProcessing::~SignalProcessing()
 
 }
 
-void SignalProcessing::init(int samplingFrequency, int carrierFrequency, int symbolPeriod, int filterOrder, int asOfFrequency_LPF, int minimumFrequency_BPF, int maximumFrequency_BPF)
+void SignalProcessing::init(int samplingFrequency, int carrierFrequency, int symbolPeriod, int filterOrder, int asOfFrequency_LPF, int minimumFrequency_BPF, int maximumFrequency_BPF, int carrierFrequency2)
 {
 	freq = samplingFrequency;
 	fc = carrierFrequency;
@@ -46,6 +50,8 @@ void SignalProcessing::init(int samplingFrequency, int carrierFrequency, int sym
 	fh = asOfFrequency_LPF;
 	fld = minimumFrequency_BPF;
 	fhd = maximumFrequency_BPF;
+	
+	fc2 = carrierFrequency2;
 }
 
 //离散傅里叶变换
@@ -143,11 +149,17 @@ void SignalProcessing::BaseBandSignal()
 			k++;
 		}
 	}
-	for (i = 0; i < 16 * M; i++)  //编成双极性非归零码
+	for (i = 0; i < 16 * M; i++) 
 	{
 		if (tDD1[i] == 0)
-			tDD[i] = -1;
-		//	Sa[i] = 0;           //编成单极性非归零码
+		{
+			if (selectCodeStyle == 0) {
+				tDD[i] = -1; //编成双极性非归零码
+			}
+			else if (selectCodeStyle == 1) {
+				tDD[i] = 0;//编成单极性非归零码
+			}
+		}
 		else
 			tDD[i] = 1;
 	}
@@ -243,10 +255,12 @@ void SignalProcessing::FSKModulate()
 
 	for (int i = 0; i < 16 * M; i++)
 	{
-		a1 = 2.0 * PI1 * f11 * i / freq; // 计算第一个频率的相位
-		a2 = 2.0 * PI1 * f22 * i / freq; // 计算第二个频率的相位
+		a1 = 2.0 * PI1 * fc * i / freq; // 计算第一个频率的相位
+		a2 = 2.0 * PI1 * fc2 * i / freq; // 计算第二个频率的相位
 
-		Mod[i] = tDD[i] * cos(a1 + a2); // 应用两个频率进行调制
+		Mod[i] = tDD[i] * cos(a1);
+		Mod[i] += tDD[i] * cos(a2); // 应用两个频率进行解调
+
 	}
 
 	for (int i = 0; i < 16 * M; i++)
@@ -263,8 +277,6 @@ void SignalProcessing::ASKModulate(){
 	for (int i = 0; i < 16 * M; i++)
 	{
 		a = 2.0 * PI1 * c * i;
-
-		//a = 2.0 * PI1 * 0.25 * i;
 
 		Mod[i] = tDD[i] * cos(a);
 	}
@@ -335,23 +347,6 @@ void SignalProcessing::Noise(int inten)
 		No[k] = inten * dist(generator);
 	}
 	DFT(No, 16 * M);
-
-
-	/*int i,k;
-	float r0=0.0;
-	float r[12];
-	for(k=0; k<16*M; k++)
-	{
-		for(i=0; i<12; i++)
-		{
-
-			r[i] = (float)(2*rand()-RAND_MAX)/RAND_MAX;
-			r0 += r[i];
-			r0 = float(inten*r0/12.0);
-		}
-		No[k] = r0;
-	}*/
-
 }
 
 //窗函数法带通滤波器
@@ -441,8 +436,8 @@ void SignalProcessing::FSKDemodulate() {
 
 	for (int i = 0; i < 16 * M; i++)
 	{
-		a1 = 2.0 * PI1 * f11 * i / freq; // 计算第一个频率的相位
-		a2 = 2.0 * PI1 * f22 * i / freq; // 计算第二个频率的相位
+		a1 = 2.0 * PI1 * fc * i / freq; // 计算第一个频率的相位
+		a2 = 2.0 * PI1 * fc2 * i / freq; // 计算第二个频率的相位
 
 		Mod[i] = tDD[i] * cos(a1);
 		Mod[i] += tDD[i] * cos(a2); // 应用两个频率进行解调
@@ -454,7 +449,7 @@ void SignalProcessing::FSKDemodulate() {
 	DFT(tDD, 16 * M);
 }
 
-//解调(ASK) FSK
+//解调(ASK) PSK
 void SignalProcessing::ASKDemodulate() {
 
 	float c = (float)fc / freq;
@@ -501,8 +496,12 @@ void SignalProcessing::Adjust()
 			}
 			else
 			{
-				tDD[k] = -1;
-				//Sa[k] = 0;改
+				if (selectCodeStyle == 0) {
+					tDD[k] = -1;
+				}
+				else if(selectCodeStyle == 1) {
+					tDD[k] = 0;
+				}
 				k++;
 			}
 		}
@@ -561,7 +560,7 @@ void SignalProcessing::Display()
 			tDD[k] = 1;
 			k--;
 		}
-		if (S1[i] < 0)
+		if (S1[i] <= 0)
 		{
 			tDD[k] = 0;
 			k--;
@@ -648,3 +647,12 @@ int SignalProcessing::GetSelectModulation() {
 void SignalProcessing::SetSelectModulation(int sM) {
 	selectModulation = sM;
 }
+
+int SignalProcessing::GetSelectCodeStyle() {
+	return selectCodeStyle;
+}
+
+void SignalProcessing::SetSelectCodeStyle(int sCS) {
+	selectCodeStyle = sCS;
+}
+

@@ -16,6 +16,7 @@ public:
 	CString text1;
 	CString text2;
 	CString text3;
+	CString text4;
 
 	//系统参数
 	int samplingFrequency;		 //采样频率
@@ -29,6 +30,7 @@ public:
 	int  minimumFrequency_BPF;    //带通滤波器的截至频率(最小)
 	int  maximumFrequency_BPF;    //带通滤波器的截至频率(最大)
 
+	int carrierFrequency2;        //载波频率2
 
 
 
@@ -50,4 +52,5 @@ public:
 	CComboBox m_cbExamble2;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	CComboBox m_cbExamble3;
+	CComboBox m_cbExamble4;
 };

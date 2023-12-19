@@ -33,6 +33,9 @@ public:
 	const CString FSK = _T("FSK");
 	const CString PSK = _T("PSK");
 
+	const CString DPC = _T("双极性非归零码");
+	const CString SPC = _T("单极性非归零码");
+
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME
