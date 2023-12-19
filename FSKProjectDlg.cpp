@@ -218,7 +218,6 @@ void CFSKProjectDlg::OnBnClickedOk()
 	CDialogEx::OnOK();
 }
 
-
 //信号传输过程的特性曲线
 void CFSKProjectDlg::Graph(float S[], float Frep[])
 {
@@ -404,7 +403,6 @@ void CFSKProjectDlg::OnBnClickedInputbutton()
 //基带信号按钮
 void CFSKProjectDlg::OnBnClickedBasesignal()
 {
-
 	mySignal.SetSignal(_ttoi(stuID), noiseIntensity);
 	mySignal.BaseBandSignal();
 	this->Graph(mySignal.GetTDD(), mySignal.GetFDD());
@@ -413,7 +411,6 @@ void CFSKProjectDlg::OnBnClickedBasesignal()
 //低通滤波器按钮1：窗函数
 void CFSKProjectDlg::OnBnClickedLowfilter1()
 {
-
 	mySignal.LPF();
 	this->Graph(mySignal.GetTDD(), mySignal.GetFDD());
 }
@@ -421,7 +418,6 @@ void CFSKProjectDlg::OnBnClickedLowfilter1()
 //低通滤波器按钮1：频率采样
 void CFSKProjectDlg::OnBnClickedLowfrequencysampling1()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	mySignal.LPFFS();
 	this->Graph(mySignal.GetTDD(), mySignal.GetFDD());
 
@@ -466,7 +462,6 @@ void CFSKProjectDlg::OnBnClickedBandfilter()
 //带通滤波器按钮：频率采样
 void CFSKProjectDlg::OnBnClickedBandfrequencysampling()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	mySignal.BPFFS();
 	this->Graph(mySignal.GetTDD(), mySignal.GetFDD());
 }
@@ -494,7 +489,6 @@ void CFSKProjectDlg::OnBnClickedLowfilter2()
 //低通滤波器按钮2：频率采样
 void CFSKProjectDlg::OnBnClickedLowfrequencysampling2()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	mySignal.LPFFS();
 	this->Graph(mySignal.GetTDD(), mySignal.GetFDD());
 }
@@ -645,10 +639,6 @@ void CFSKProjectDlg::OnBnClickedAutoanalysis()
 //频率采样(自动分析)
 void CFSKProjectDlg::OnBnClickedAutoanalysisp()
 {
-	// TODO: 在此添加控件通知处理程序代码
-
-	// TODO: 在此添加控件通知处理程序代码
-	UpdateData(TRUE);
 	mySignal.SetSignal(_ttoi(stuID), noiseIntensity);
 	mySignal.BaseBandSignal();
 	this->Graph(mySignal.GetTDD(), mySignal.GetFDD());
@@ -735,9 +725,22 @@ void CFSKProjectDlg::OnBnClickedAutoanalysisp()
 		_T("\n接收信号：") + receiveSignal +
 		_T("\n误码数：") + bitErrorsNumber +
 		_T("\n误码率：") + bitErrorsRate + "%");
+}
 
+//清空按钮
+void CFSKProjectDlg::OnBnClickedClear()
+{
 
+	CDialog dlg(IDD_DIALOG2);
+	dlg.DoModal();   //
 
+	// TODO: 在此添加控件通知处理程序代码
+	inputText.SetWindowTextW(_T(""));
+	outputText.SetWindowTextW(_T(""));
+
+	//UpdateData(FALSE);
+
+	RedrawWindow();
 
 }
 
@@ -746,14 +749,13 @@ HBRUSH CFSKProjectDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-	// TODO:  在此更改 DC 的任何特性
 
 	if (pWnd->GetDlgCtrlID() == IDC_INPUTDISPLAY || pWnd->GetDlgCtrlID() == IDC_OUTPUTDISPLAY ||
-		pWnd->GetDlgCtrlID() == IDC_TIMEDOMAINDISPLAY || pWnd->GetDlgCtrlID() == IDC_FREQUENCYDOMAINDISPLAY)     //IDC_DEVICE_STAT为Static控件的ID
+		pWnd->GetDlgCtrlID() == IDC_TIMEDOMAINDISPLAY || pWnd->GetDlgCtrlID() == IDC_FREQUENCYDOMAINDISPLAY)  
 	{
 		pDC->SetTextColor(RGB(0, 0, 0));    //设置控件字体颜色
-		pDC->SetBkMode(TRANSPARENT);   //设置透明属性
-		return (HBRUSH)GetStockObject(NULL_BRUSH);   //返回空画刷
+		pDC->SetBkMode(TRANSPARENT);		 //设置透明属性
+		return (HBRUSH)GetStockObject(NULL_BRUSH); 
 	}
 
 	if (pWnd->GetDlgCtrlID() == IDC_STATIC) {
@@ -797,8 +799,6 @@ HBRUSH CFSKProjectDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 		pDC->SetBkMode(TRANSPARENT);   //设置透明属性
 		pDC->SetTextColor(RGB(255, 0, 0));    //设置控件字体颜色
-
-		// 返回空画刷
 		return (HBRUSH)GetStockObject(NULL_BRUSH);
 
 	}
@@ -816,26 +816,8 @@ HBRUSH CFSKProjectDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	}
 
-	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
 }
 
-
-
-void CFSKProjectDlg::OnBnClickedClear()
-{
-
-	CDialog dlg(IDD_DIALOG2);
-	dlg.DoModal();   //
-
-	// TODO: 在此添加控件通知处理程序代码
-	inputText.SetWindowTextW(_T(""));
-	outputText.SetWindowTextW(_T(""));
-
-	//UpdateData(FALSE);
-
-	RedrawWindow();
-
-}
 
 
