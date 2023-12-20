@@ -25,12 +25,12 @@ SignalProcessing::SignalProcessing()
 	M = 20;					
 	N = 127;					
 	freq = 4000;			
-	fhd = 1400;			
+	fhd = 2000;			
 	fld = 600;		
 	fh = 200;			
 	fc = 1000;  
 
-	fc2 = 2000;
+	fc2 = 1500;
 
 	selectCodeStyle = 0;
 }
@@ -255,16 +255,33 @@ void SignalProcessing::FSKModulate()
 
 	for (int i = 0; i < 16 * M; i++)
 	{
+		
+		Mod[i] = 0;
+		Mod1[i] = 0;
 		a1 = 2.0 * PI1 * fc * i / freq; // 计算第一个频率的相位
 		a2 = 2.0 * PI1 * fc2 * i / freq; // 计算第二个频率的相位
 
-		Mod[i] = tDD[i] * cos(a1);
-		Mod[i] += tDD[i] * cos(a2); // 应用两个频率进行解调
+		if (tDD[i] > 0) {
+			Mod[i] = tDD[i] * cos(a1);
+		}
+		else if (tDD[i] <0 ) {
+			Mod1[i] = tDD[i] * cos(a2);
+		}
+		else if (tDD[i] == 0) {
+			Mod1[i] = cos(a2);
+		}
+		
+		//Mod[i] = tDD[i] * cos(a1);
+		//Mod[i] += tDD[i] * cos(a2); // 应用两个频率进行解调
 
 	}
 
 	for (int i = 0; i < 16 * M; i++)
+	{
+		Mod[i] += Mod1[i];
 		tDD[i] = Mod[i];
+	}
+		
 
 	DFT(tDD, 16 * M);
 }
@@ -392,8 +409,8 @@ void SignalProcessing::BPF()
 		if (i == a)
 			H10[i] = 0.4;
 		else
-			H10[i] = sin(0.7 * PI1 * (i - a)) / (float)(PI1 * (i - a)) - sin(0.3 * PI1 * (i - a)) / (float)(PI1 * (i - a));
-	}
+			H10[i] = sin(2 * PI1 * fhd/ freq  * (i - a)) / (float)(PI1 * (i - a)) - sin(2 * PI1 * fld/ freq * (i - a)) / (float)(PI1 * (i - a));
+	}//2 * PI1 * fh / freq
 
 	for (i = 0; i < N; i++)
 		H10[i] = H10[i] * Wn1[i];
@@ -414,9 +431,9 @@ void SignalProcessing::BPFFS() {
 		if (((float)freq * k / N > 700) && ((float)freq * k / N < 900))
 			Hb0[k] = ((float)freq * k / N - 700) / 200;
 		//Hb0[k] = 0;//改
-		if (((float)freq * k / N > 900) && ((float)freq * k / N < 1100))
+		if (((float)freq * k / N > 900) && ((float)freq * k / N < 1800))
 			Hb0[k] = 1;
-		if (((float)freq * k / N > 1100) && ((float)freq * k / N < 1300))
+		if (((float)freq * k / N > 1800) && ((float)freq * k / N < 2500))
 			Hb0[k] = (1300 - (float)freq * k / N) / 200;
 		//Hb0[k] = 0;//改
 	//else Hb0[k]=0;
@@ -439,12 +456,25 @@ void SignalProcessing::FSKDemodulate() {
 		a1 = 2.0 * PI1 * fc * i / freq; // 计算第一个频率的相位
 		a2 = 2.0 * PI1 * fc2 * i / freq; // 计算第二个频率的相位
 
+
+		//if (tDD[i]>0) {
+		//	Mod[i] = tDD[i] * cos(a1);
+		//}
+		//else if (tDD[i] <=0 ) {
+		//	Mod1[i] = tDD[i] * cos(a2);
+		//}
+
 		Mod[i] = tDD[i] * cos(a1);
 		Mod[i] += tDD[i] * cos(a2); // 应用两个频率进行解调
+
 	}
 
 	for (int i = 0; i < 16 * M; i++)
+	{
+//		Mod[i] += Mod1[i];
 		tDD[i] = Mod[i];
+	}
+
 
 	DFT(tDD, 16 * M);
 }
@@ -453,7 +483,6 @@ void SignalProcessing::FSKDemodulate() {
 void SignalProcessing::ASKDemodulate() {
 
 	float c = (float)fc / freq;
-	TRACE(_T("%lf\n"), c);
 	float a = 0.0;
 	for (int i = 0; i < 16 * M; i++)
 	{
